@@ -1,5 +1,6 @@
 import os
 from helpers import fastq
+from helpers import bio_files
 
 def filter_fastq(input_fastq: str, 
                  output_fastq: str = "fitered_fastq.fastq", 
@@ -23,3 +24,22 @@ def filter_fastq(input_fastq: str,
                     out_fastq.write("\n".join(read) + "\n")
                   
                 read = []
+
+
+def convert_multiline_fasta_to_oneline(input_fasta, output_fasta = "oneline_fasta_out.fasta"):
+    with open(input_fasta, mode = 'r') as inp_fasta, open(output_fasta, mode = "w") as out_fasta:
+        header = None
+        part = []
+      
+        for line in inp_fasta:
+            if line.startswith(">"):
+                if header is not None:
+                    bio_files.write_fasta(output_fasta_file = out_fasta, header = header, part = part)
+                    part = []
+                header = line.rstrip("\n")
+                
+            if not line.startswith(">"):
+                part.append(line.rstrip("\n"))
+
+        if header is not None:
+            bio_files.write_fasta(output_fasta_file = out_fasta, header = header, part = part)
