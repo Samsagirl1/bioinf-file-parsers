@@ -1,0 +1,12 @@
+.DS_Store
+.virtual_documents/
+anaconda_projects/
+*.ipynb
+flanking_genes.fasta
+oneline_fasta_out.fasta
+output_proteins*
+.ipynb_checkpoints/
+__pycache__/
+filtered/
+helpers/__pycache__/
+parsed_blast_result
