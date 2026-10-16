@@ -6,4 +6,7 @@ flanking_genes.fasta
 oneline_fasta_out.fasta
 output_proteins*
 .ipynb_checkpoints/
-example_data/
+__pycache__/
+filtered/
+helpers/__pycache__/
+parsed_blast_result

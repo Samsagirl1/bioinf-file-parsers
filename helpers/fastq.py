@@ -2,7 +2,7 @@ import math
 
 def uniform_input(gc_bounds: float | int | tuple[float, float], 
                   length_bounds: float | int | tuple[float, float], 
-                  quality_threshold) -> tuple:
+                  quality_threshold: float | int) -> tuple:
     """
     Converts all interval arguments to the form (min, max)
 
@@ -75,7 +75,7 @@ def check_gc(seq: str,
     seq: str - RNA/DNA sequence
     gc_bounds: tuple[float, float] - (min, max) GC content in percent
 
-    Return bool. True if the read passes the check, False if not
+    Returns bool. True if the read passes the check, False if not
     """
     
     gc_content = count_gc(seq)
@@ -89,7 +89,7 @@ def check_qt(quality_seq: str,
 
     Arguments:
     quality_seq: str - quality line of the read from FASTQ file
-    quality_threshold: float | int - miniman mean quality (phred33)
+    quality_threshold: float | int - minimal mean quality (phred33)
 
     Returns bool. True if the read passes the check, False if not
     """
@@ -105,9 +105,9 @@ def check_len(seq: str,
 
     Arguments:
     seq: str - RNA/DNA sequence
-    lentgh_bounds: tuple[float, float] - (min, max) length 
+    length_bounds: tuple[float, float] - (min, max) length 
 
-    Returns bool. True of the read passes the check
+    Returns bool. True if the read passes the check
     """
     return len(seq) >= length_bounds[0] and len(seq) <= length_bounds[1]
 
@@ -120,7 +120,7 @@ def check_read(read: list[str],
     Applies all filters to ont FASTQ read
 
     Arguments:
-    read: list[str] - four line of the read (header, sequence, "+", quality)
+    read: list[str] - four lines of the read (header, sequence, "+", quality)
     gc_bounds: tuple[float, float] - GC content bounds
     length_bounds: tuple[float, float] - length bounds
     quality_threshold: float | int - minimal mean quality

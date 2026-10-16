@@ -23,21 +23,26 @@ def filter_fastq(input_fastq: str,
      
     os.makedirs("filtered", exist_ok=True)
 
-    gc_bounds, length_bounds, quality_threshold = fastq.uniform_input(gc_bounds=gc_bounds, length_bounds=length_bounds, quality_threshold=quality_threshold)
+    gc_bounds, length_bounds, quality_threshold = fastq.uniform_input(gc_bounds=gc_bounds, 
+                                                                      length_bounds=length_bounds, 
+                                                                      quality_threshold=quality_threshold)
     
     with open(input_fastq, mode = "r") as fastq_file, open(os.path.join("filtered", output_fastq), mode = "w") as out_fastq:
         read = []
         for line in fastq_file:
             read.append(line.rstrip("\n"))
             if len(read) == 4:
-                if fastq.check_read(read = read, gc_bounds=gc_bounds, length_bounds=length_bounds, quality_threshold=quality_threshold):
+                if fastq.check_read(read = read, 
+                                    gc_bounds=gc_bounds, 
+                                    length_bounds=length_bounds, 
+                                    quality_threshold=quality_threshold):
                     out_fastq.write("\n".join(read) + "\n")
                   
                 read = []
 
 
 def convert_multiline_fasta_to_oneline(input_fasta: str, 
-                                       output_fasta: str = "oneline_fasta_out.fasta"):
+                                       output_fasta: str = "oneline_fasta_out.fasta") -> None:
     """
     Rewrites a fasta file so that each sequence occupies a single line
 
@@ -55,7 +60,9 @@ def convert_multiline_fasta_to_oneline(input_fasta: str,
         for line in inp_fasta:
             if line.startswith(">"):
                 if header is not None:
-                    bio_files.write_fasta(output_fasta_file = out_fasta, header = header, part = part)
+                    bio_files.write_fasta(output_fasta_file = out_fasta, 
+                                          header = header, 
+                                          part = part)
                     part = []
                 header = line.rstrip("\n")
             else:
@@ -109,7 +116,7 @@ def select_genes_from_gbk_to_fasta(input_gbk: str,
     genes: str | list[str] - gene name or collection of gene names of interest
     output_fasta: str - path to the output FASTA file (optional)
     n_before: int - number of genes before each gene of interest that need to be writen to a FASTA file
-    n_after: int - number of genes after each gene of interest that need to be writen to a FASTA file
+    n_after: int - number of genes after each gene of interest that need to be written to a FASTA file
 
     Returns None
     """
