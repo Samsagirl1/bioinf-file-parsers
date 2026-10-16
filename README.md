@@ -1,31 +1,31 @@
 # bioinformatics-file-parsers
 
-Небольшой пакет для работы с биоинформатическими файлами (FASTQ, FASTA, BLAST, GenBank). Сделан в рамках практикума по Python в биоинформатике. Все функции используют только стандартную библиотеку Python.
+A small package for working with bioinformatics files (FASTQ, FASTA, BLAST, GenBank). Made as part of a Python practicum in bioinformatics. All functions use only the Python standard library.
 
-## Установка
+## Installation
 
-Нужен Python 3.10 или новее. Внешние библиотеки не требуются.
+Python 3.10 or newer is required. External libraries are not required.
 
 ```bash
 git clone https://github.com/Samsagirl1/bioinf-file-parsers.git
 cd bioinf-file-parsers
 ```
 
-## Структура пакета
+## Package structure
 
 ```
 -/
 |- README.md
-|- main.py # утилиты (импорты, filter_fastq и другие основные функции)
+|- main.py # utilities (imports, filter_fastq and other main functions)
 |- helpers/
-    |- fastq.py       # вспомогательные функции для filter_fastq
-    |- bio_files.py   # вспомогательные функции для convert_multiline_fasta_to_oneline, parse_blast_output, select_genes_from_gbk_to_fasta
+    |- fastq.py       # helper functions for filter_fastq
+    |- bio_files.py   # helper functions for convert_multiline_fasta_to_oneline, parse_blast_output, select_genes_from_gbk_to_fasta
 ```
 
-## Основные функции
+## Main functions
 
 ### `filter_fastq`
-Фильтрует риды/fastq-последовательности по GC составу, длине нуклеотидной последовательности и по среднему качеству рида (шкала phred 33). Фильтрация проходит для каждого рида в момент прочтения входного файла. Результат сохраняется в папку "filtered". 
+Filters reads/FASTQ sequences by GC content, nucleotide sequence length, and average read quality (Phred 33 scale). Filtering is performed for each read at the moment the input file is read. The result is saved to the "filtered" folder.
 
 ```python
 from main import filter_fastq
@@ -33,11 +33,11 @@ from main import filter_fastq
 filter_fastq(input_fastq = "example_fastq.fastq", output_fastq = "filtered_fastq.fastq", gc_bounds = (40, 60), length_bounds = (50, 150), quality_threshold = 20)
 ```
 
-- `gc_bounds` и `length_bounds` принимают интервал `(min, max)` или одно число, которое будет считаться верхней границей с нижней по-умолчанию равной 0
-- `quality_threshold` принимает число - минимальное среднее качество рида
+- `gc_bounds` and `length_bounds` accept an interval (min, max) or a single number, which will be considered the upper bound, with the lower bound defaulting to 0
+- `quality_threshold` accepts a number - the minimum average read quality
 
 ### `convert_multiline_fasta_to_oneline` 
-Принимает на вход fasta-файл и преобразует каждую последовательность таким образом, чтобы каждая последовательность (ДНК/РНК/Белка/...) умещалась в одной строке. В результате работы функции все преобразованные последовательности будут сохранены в новый fasta-файл.
+Takes a FASTA file as input and transforms each sequence so that each sequence (DNA/RNA/protein/...) fits on one line. As a result of the function, all transformed sequences will be saved to a new FASTA file.
 
 ```python
 from main import convert_multiline_fasta_to_oneline
@@ -45,10 +45,10 @@ from main import convert_multiline_fasta_to_oneline
 convert_multiline_fasta_to_oneline(input_fasta = "example_fasta.fasta", output_fasta = "output_fasta.fasta")
 ```
 
-- Аргумент `output_fasta` необязателен
+- The argument `output_fasta` is optional
 
 ### `parse_blast_output`
-Берет из отчета работы алгоритма BLAST первое название из столбца `Description` для каждого QUERY запроса и сохраняет уникальные названия по алфавиту, по одному на строку.
+Takes from the BLAST algorithm report the first name from the Description column for each QUERY request and saves the unique names alphabetically, one per line.
 
 ```python
 from main import parse_blast_output
@@ -56,27 +56,26 @@ from main import parse_blast_output
 parse_blast_output(input_file = "example_blast_result.txt", output_file = "parsed_blast_result.txt")
 ```
 
-- Аргумент `output_file` необязателен
+- The argument `output_file` is optional
 
 ### `select_genes_from_gbk_to_fasta`
-Находит в GenBank-файле (.gbk) гены интереса и сохраняет в FASTA-файл аминокислотные последовательности (квалификатор /translation) их соседей (фланкирующих генов). Последовательности генов интереса не записываются в выходной файл.
+Finds genes of interest in a GenBank file (.gbk) and saves to a FASTA file the amino acid sequences (the /translation qualifier) of their neighbors (flanking genes). The sequences of the genes of interest are not written to the output file.
 
 ```python
 from main import select_genes_from_gbk_to_fasta
 
 select_genes_from_gbk_to_fasta(input_gbk= "example_gbk.gbk", genes = ["sdhA", "sucC"], output_fasta = "output_fasta.fasta", n_before = 1, n_after = 1)
 ```
-- `n_before`, `n_after` принимают количество генов до гена интереса и после. По-умолчанию равны 1
-- `genes` принимает ген интереса или список генов интереса
-- `output_fasta` необязателен
+- `n_before`, `n_after` accept the number of genes before and after the gene of interest. By default, they are equal to 1
+- `genes` accepts a gene of interest or a list of genes of interest
+- `output_fasta` is optional
 
-## Ограничения
+## Limitations
 
-- Функции работают только с файлами в ожидаемых форматах (см. папку `example_data`)
-- `select_genes_from_gbk_to_fasta` читает только признаки `CDS`
-- При подаче в функцию `select_genes_from_gbk_to_fasta` соседние гены, их последовательности могут быть записаны в выходной fasta файл как соседи друг друга
+- The functions work only with files in the expected formats (see the example_data folder)
+- `select_genes_from_gbk_to_fasta` reads only `CDS` features
+- When neighboring genes are passed to the `select_genes_from_gbk_to_fasta` function, their sequences may be written to the output FASTA file as each other's neighbors
 
-## Автор
-
-Валерия Киренская
+## Author
+Valeria Kirenskaya
 Telegram: @samsagirl
