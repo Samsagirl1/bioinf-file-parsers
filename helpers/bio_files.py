@@ -1,15 +1,44 @@
-def write_fasta(output_fasta_file, header, part):
-  
+def write_fasta(output_fasta_file: TextIO, 
+                header: str, 
+                part: list[str]) -> None:
+    """
+    Writes one FASTA record with the sequence on a single line
+
+    Arguments:
+    output_fasta_file: TextIO - opened file for writing
+    header: str - header line starting with ">"
+    part: list[str] - lines of the sequence 
+
+    Return None
+    """
     output_fasta_file.write(header + "\n" + "".join(part) + "\n")
   
 
-def write_proteins(output_file, list_of_proteins):
+def write_proteins(output_file: str, 
+                   list_of_proteins: list[str]) -> None:
+    """
+    Writes sorted alphabetically protein names to the output file, one per line
+
+    Arguments:
+    output_file: str - path to the output file
+    list_of_proteins: list[str] - list of proteins names
+
+    Returns None
+    """
   
     with open(output_file, mode = "w") as out_file:
       out_file.write("\n".join(list_of_proteins) + "\n")
       
 
-def parse_gbk_file(input_file) -> list:
+def parse_gbk_file(input_file: str) -> list[dict[str, str]]:
+    """
+    Reads a GenBank file (.gbk) and collects qualifiers of every CDS 
+
+    Arguments: 
+    input_file: str - path to the GenBank file
+
+    Returns list[dict[str, str]]. A list of dictionaties, where keys are qualifier names with the "/"
+    """
   
     with open(input_file, mode = "r") as inp_file:
         is_cds = False
@@ -42,8 +71,17 @@ def parse_gbk_file(input_file) -> list:
         return all_cds
   
 
-def find_genes_indx(genes, cds_list):
-  
+def find_genes_indx(genes: str | list[str], 
+                    cds_list: list[dict[str, str]]) -> set[int]:
+    """
+    Finds position of the given genes of interest in the list of all CDS
+
+    Arguments:
+    genes: str | list[str] - gene name or list of gene names
+    cds_list: list[dict[str, str]] - a list containing all CDS, each CDS is a dict in which the keys are qualifiers.
+
+    Return set[int] - set of indexes 
+    """
     if isinstance(genes, str):
       genes = [genes]
       

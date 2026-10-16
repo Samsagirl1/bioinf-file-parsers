@@ -1,8 +1,17 @@
 import math
 
-def uniform_input(gc_bounds, length_bounds, quality_threshold) -> tuple:
+def uniform_input(gc_bounds: float | int | tuple[float, float], 
+                  length_bounds: float | int | tuple[float, float], 
+                  quality_threshold) -> tuple:
     """
-    Приводит все границы к виду (min, max)
+    Converts all interval arguments to the form (min, max)
+
+    Arguments:
+    gc_bounds: float | int | tuple - GC content interval in percent. A single number is treated as the upper bound
+    length_bounds: float | int | tuple - read length interval. A single number is treated as the upper bound
+    quality_threshold: float | int - minimal average read quality (phred33)
+
+    Returns tuple (gc_bounds, length_bounds, quality_threshold)
     """
     
     result = []
@@ -22,7 +31,12 @@ def uniform_input(gc_bounds, length_bounds, quality_threshold) -> tuple:
     
 def average_qt(quality_seq: str) -> float:
     """
-    Функция для подсчета значения среднего качества рида
+    Computes the average quality (phred33) value of a read 
+
+    Arguments:
+    quality_seq: str - quality sequence of a read from FASTQ file
+
+    Returns mean quality: float. For an empty line returns 0
     """
     
     if not quality_seq:
@@ -38,7 +52,12 @@ def average_qt(quality_seq: str) -> float:
 
 def count_gc(seq : str) -> float:
     """
-    Функция для подсчета GC состава
+    Computes GC content in sequence
+
+    Arguments:
+    seq: str - RNA/DNA sequence
+
+    Returns GC content: float. For an empty sequence returns 0
     """
     if not seq:
         return 0
@@ -47,34 +66,66 @@ def count_gc(seq : str) -> float:
     return (seq.count("G") + seq.count("C")) * 100 / len(seq)
 
 
-def check_gc(seq: str, gc_bounds: float | int | tuple[float, float]) -> bool:
+def check_gc(seq: str, 
+             gc_bounds: tuple[float, float]) -> bool:
     """
-    Функция для фильтрации по GC составу по заданному порогу
+    Checks that GC content of a sequence is within the bounds
+
+    Arguments:
+    seq: str - RNA/DNA sequence
+    gc_bounds: tuple[float, float] - (min, max) GC content in percent
+
+    Return bool. True if the read passes the check, False if not
     """
     
     gc_content = count_gc(seq)
     return gc_content >= gc_bounds[0] and gc_content <= gc_bounds[1]
 
 
-def check_qt(quality_seq: str, quality_threshold: float | int) -> bool:
+def check_qt(quality_seq: str, 
+             quality_threshold: float | int) -> bool:
     """
-    Функция для фильтрации по значению среднего качества прочтения 
+    Checks that mean read quality is not lower than the threshold
+
+    Arguments:
+    quality_seq: str - quality line of the read from FASTQ file
+    quality_threshold: float | int - miniman mean quality (phred33)
+
+    Returns bool. True if the read passes the check, False if not
     """
     
     avg_qt = average_qt(quality_seq)
     return avg_qt >= quality_threshold
 
 
-def check_len(seq: str, length_bounds: float | int | tuple[float, float]) -> bool:
+def check_len(seq: str, 
+              length_bounds: tuple[float, float]) -> bool:
     """
-    Функция для фильтрации ридов по заданному интервалу длины 
+    Checks that sequence length is within the bounds
+
+    Arguments:
+    seq: str - RNA/DNA sequence
+    lentgh_bounds: tuple[float, float] - (min, max) length 
+
+    Returns bool. True of the read passes the check
     """
     return len(seq) >= length_bounds[0] and len(seq) <= length_bounds[1]
 
 
-def check_read(read, gc_bounds, length_bounds, quality_threshold) -> bool:
+def check_read(read: list[str], 
+               gc_bounds: tuple[float, float], 
+               length_bounds: tuple[float, float], 
+               quality_threshold: float | int) -> bool:
     """
-    Принимает список из 4 элементов (строк рида) и делает проверку
+    Applies all filters to ont FASTQ read
+
+    Arguments:
+    read: list[str] - four line of the read (header, sequence, "+", quality)
+    gc_bounds: tuple[float, float] - GC content bounds
+    length_bounds: tuple[float, float] - length bounds
+    quality_threshold: float | int - minimal mean quality
+
+    Returns True if the read passes all checks
     """
     
     return (check_len(read[1], length_bounds) and 
